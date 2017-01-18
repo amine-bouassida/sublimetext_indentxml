@@ -129,5 +129,5 @@ class IndentJsonCommand(BaseIndentCommand):
     def indent(self, s):
         mongodb_objects = re.compile("([A-Za-z]+)\(([^\)]+)\)")
         s = mongodb_objects.sub(r'\2', s)
-        parsed = OrderedDict(json.loads(s))
+        parsed = json.JSONDecoder(object_pairs_hook=OrderedDict).decode(s)
         return json.dumps(parsed, sort_keys=False, indent=4, separators=(',', ': '), ensure_ascii=False)
