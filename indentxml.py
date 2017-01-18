@@ -5,6 +5,7 @@ import json
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError, errors
 from os.path import basename, splitext
+from collections import OrderedDict
 
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
@@ -128,5 +129,5 @@ class IndentJsonCommand(BaseIndentCommand):
     def indent(self, s):
         mongodb_objects = re.compile("([A-Za-z]+)\(([^\)]+)\)")
         s = mongodb_objects.sub(r'\2', s)
-        parsed = json.loads(s)
-        return json.dumps(parsed, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
+        parsed = OrderedDict(json.loads(s))
+        return json.dumps(parsed, sort_keys=False, indent=4, separators=(',', ': '), ensure_ascii=False)
