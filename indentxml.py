@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
-  
+
     def __init__(self, view):
         self.view = view
         self.language = self.get_language()
@@ -34,12 +34,14 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
 
         return self.check_enabled(self.get_language())
 
-    def run(self, edit):
+    def run(self, edit, toreplace=None, replacement=None):
         """
         Main plugin logic for the 'indent' command.
         """
         view = self.view
         regions = view.sel()
+        if toreplace: self.toreplace = toreplace
+        if replacement: self.replacement = replacement
         # if there are more than 1 region or region one and it's not empty
         if len(regions) > 1 or not regions[0].empty():
             for region in view.sel():
@@ -131,3 +133,13 @@ class IndentJsonCommand(BaseIndentCommand):
         s = mongodb_objects.sub(r'\2', s)
         parsed = json.JSONDecoder(object_pairs_hook=OrderedDict).decode(s)
         return json.dumps(parsed, sort_keys=False, indent=4, separators=(',', ': '), ensure_ascii=False)
+
+class ReplaceCharCommand(BaseIndentCommand):
+
+    def check_enabled(self, language):
+        return True
+
+    def indent(self, s):
+        if self.toreplace and self.replacement:
+            s = s.replace(self.toreplace, self.replacement)
+        return s
